@@ -47,11 +47,33 @@ function leerInfoCurso(cursoSeleccionado) {
     id: cursoSeleccionado.querySelector("a").getAttribute("data-id"),
     cantidad: 1,
   };
-  //Añadir elementos al array de carrito
-  /*Añado los artículos en una copia del array para no perder
+
+  //Comprobar si un elemento ya existe en el carrito para añadirlo o actualizar cantidad
+
+  const existe = articulosCarrito.some(
+    (cursoSeleccionado) => cursoSeleccionado.id === infoCurso.id
+  );
+  if (existe) {
+    //Iteramos con el map
+    const cursos = articulosCarrito.map((cursoSeleccionado) => {
+      //Si encontramos un curso con id duplicado
+      if (cursoSeleccionado.id === infoCurso.id) {
+        //actualizamos la cantidad
+        cursoSeleccionado.cantidad++;
+        return cursoSeleccionado; //devolvemos el objeto actualizado
+      } else {
+        return cursoSeleccionado; //devuelve los objetos que no están duplicados
+      }
+    });
+    articulosCarrito = [...cursos];
+  } else {
+    //Añadir elementos al array de carrito
+    /*Añado los artículos en una copia del array para no perder
   los artículos que voy añadiendo y le añado el objeto con la info 
   del curso seleccionado*/
-  articulosCarrito = [...articulosCarrito, infoCurso];
+    articulosCarrito = [...articulosCarrito, infoCurso];
+  }
+
   console.log(articulosCarrito);
   carritoHTML();
 }
@@ -62,22 +84,22 @@ function carritoHTML() {
 
   //Recorre el carrito y genera el html
   articulosCarrito.forEach((cursoSeleccionado) => {
+    //El destructuring lo hice a posteriori refactorizando el código.
+    //Antes de eso tenía: cursoSeleccionado.titulo,etc.
+    const { imagen, titulo, precio, cantidad, id } = cursoSeleccionado;
     //Creo un tr por cada elemento en el carrito
     const row = document.createElement("tr");
     row.innerHTML = `
                 <td>
-                    ${cursoSeleccionado.imagen}
+                    <img src="${imagen}" width="100">
                 </td>
+                <td> ${titulo}</td>
+                <td>${precio}</td>
+                <td>${cantidad}</td>
                 <td>
-                    ${cursoSeleccionado.titulo}
+                    <a href="#" class="borrar-curso" data-id="${id}">X</a>
                 </td>
-                <td>
-                    ${cursoSeleccionado.precio}
-                </td>
-                
-                <td>
-                    ${cursoSeleccionado.cantidad}
-                </td>`;
+                `;
     /*añade html del carrito en el tbody pero no limpia 
     los artículos que había previamente. Se van acumulando*/
     contenedorCarrito.appendChild(row);
