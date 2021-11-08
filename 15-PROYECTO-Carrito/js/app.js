@@ -6,16 +6,19 @@ const carrito = document.querySelector("#carrito");
 //Todo el listado de cursos
 const listadoCursos = document.querySelector("#lista-cursos");
 
-//Donde se mostrarán los cursos añadidos
+//Donde se irán mostrando los cursos añadidos al carrito
 const contenedorCarrito = document.querySelector("#lista-carrito tbody");
 
-//Vaciar el carrito
+//Botón pra vaciar el carrito
 const vaciarCarritoBtn = document.querySelector("#vaciar-carrito");
 
-//Función para registrar todos los eventListeners
+//OJO: pongo let porque se va a ir llenando con los artículos añadidos al carrito
+let articulosCarrito = [];
+
 cargarEventListeners();
+//Función para registrar todos los eventListeners
 function cargarEventListeners() {
-  //clic en botón para añadir curso al carrito
+  //Cuando se clica para añadir curso al carrito
   listadoCursos.addEventListener("click", agregarCurso);
 }
 
@@ -23,7 +26,7 @@ function cargarEventListeners() {
 
 function agregarCurso(e) {
   e.preventDefault();
-  //prevenir el event bubbling
+  //prevenir el event bubbling. Selecciona el elemento si tiene esta clase
   if (e.target.classList.contains("agregar-carrito")) {
     //subo hacia el padre para tomar el contenido de la card
     const cursoSeleccionado = e.target.parentElement.parentElement;
@@ -36,7 +39,6 @@ function agregarCurso(e) {
 
 function leerInfoCurso(cursoSeleccionado) {
   //Creo objeto con el contenido del curso seleccionado
-
   const infoCurso = {
     imagen: cursoSeleccionado.querySelector("img").src,
     titulo: cursoSeleccionado.querySelector("h4").textContent,
@@ -45,6 +47,51 @@ function leerInfoCurso(cursoSeleccionado) {
     id: cursoSeleccionado.querySelector("a").getAttribute("data-id"),
     cantidad: 1,
   };
+  //Añadir elementos al array de carrito
+  /*Añado los artículos en una copia del array para no perder
+  los artículos que voy añadiendo y le añado el objeto con la info 
+  del curso seleccionado*/
+  articulosCarrito = [...articulosCarrito, infoCurso];
+  console.log(articulosCarrito);
+  carritoHTML();
+}
+//Mostrar carro en html
+function carritoHTML() {
+  //Limpiar el html
+  limpiarHTML();
 
-  console.log(infoCurso);
+  //Recorre el carrito y genera el html
+  articulosCarrito.forEach((cursoSeleccionado) => {
+    //Creo un tr por cada elemento en el carrito
+    const row = document.createElement("tr");
+    row.innerHTML = `
+                <td>
+                    ${cursoSeleccionado.imagen}
+                </td>
+                <td>
+                    ${cursoSeleccionado.titulo}
+                </td>
+                <td>
+                    ${cursoSeleccionado.precio}
+                </td>
+                
+                <td>
+                    ${cursoSeleccionado.cantidad}
+                </td>`;
+    /*añade html del carrito en el tbody pero no limpia 
+    los artículos que había previamente. Se van acumulando*/
+    contenedorCarrito.appendChild(row);
+  });
+}
+
+//Limpiar los cursos del tbody para que no se acumulen los anteriores
+
+function limpiarHTML() {
+  //forma lenta de hacerlo
+  //contenedorCarrito.innerHTML = "";
+  /*Mientras haya un hijo, va a estar
+eliminando el primer hijo*/
+  while (contenedorCarrito.firstChild) {
+    contenedorCarrito.removeChild(contenedorCarrito.firstChild);
+  }
 }
