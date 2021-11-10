@@ -23,6 +23,13 @@ function cargarEventListeners() {
 
   //Elimina cursos del carrito
   carrito.addEventListener("click", eliminarCurso);
+
+  //Vaciar carrito
+
+  vaciarCarritoBtn.addEventListener('click', ()=>{
+    articulosCarrito = []; //resetear el array
+    limpiarHTML();
+  });
 }
 
 //FUNCIONES
@@ -45,11 +52,21 @@ function eliminarCurso(e) {
     const cursoId = e.target.getAttribute("data-id");
     //Elimina ese curso del array. Trae todos menos el que estamos seleccionando
     articulosCarrito = articulosCarrito.filter(
-      (cursoSeleccionado) => cursoSeleccionado.id !== cursoId
-    );
-    carritoHTML(); //Itera sobre el carrito y muestra su hmtl.
-  }
-}
+      cursoSeleccionado =>  {
+        if(cursoSeleccionado.id === cursoId){
+          if(cursoSeleccionado.cantidad > 1){ //para que borre de uno en uno si hay más cantidad del mismo
+            cursoSeleccionado.cantidad--;
+            return cursoSeleccionado;
+          }else{
+            delete cursoSeleccionado
+          }
+        }else{
+          return cursoSeleccionado;
+        }
+      });
+      carritoHTML(); //Itera sobre el carrito y muestra su hmtl.
+    
+    }}
 
 //Lee el contenido del html para extraer la info del curso
 
